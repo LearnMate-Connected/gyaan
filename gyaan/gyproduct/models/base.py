@@ -9,6 +9,14 @@ from gyproduct.constants import CATEGORY_CHOICES, OWNER_CHOICES, ELIGIBILITY_PAR
 
 
 class Category(BaseActiveTimeStampModel):
+    """
+    Args:
+        BaseActiveTimeStampModel : Abstract models with necesary details for all models
+
+    Returns:
+        Category: We define category as universal classification of services on platform.
+        Like: Online courses, Offline stocks for sale 
+    """
     name = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     description = models.TextField(blank=True, null=True)
     icon = models.URLField(blank=True, null=True)
@@ -21,6 +29,11 @@ class Category(BaseActiveTimeStampModel):
 
 
 class Department(BaseActiveTimeStampModel):
+    """
+        Department: For every topic being published on platform there must be a department.
+        Example : Topic Python will be of department IT. 
+    """
+    
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     help_email = models.EmailField(
@@ -35,6 +48,10 @@ class Department(BaseActiveTimeStampModel):
 
 
 class Topic(BaseActiveTimeStampModel):
+    """
+        Topic: For every Product or ProductGroup being published on platform there can be multiple topics.
+        Example : Python courses that can be considered as a product/ product-group will be under Python topic. 
+    """
     icon = models.URLField(blank=True, null=True, help_text="An image as an icon to the topic")
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
@@ -48,6 +65,10 @@ class Topic(BaseActiveTimeStampModel):
         return "{}".format(self.name)
 
 class Eligibility(BaseActiveTimeStampModel):
+    """
+        Eligibility: We need to maintain some sort of restrictions on contents published on platform.
+        As of now we don't know exactly the number of parameters for eligibility.
+    """
     parameter = models.CharField(choices=ELIGIBILITY_PARAM_CHOICES)
     lower_limit = models.IntegerField()
     upper_limit = models.IntegerField()
@@ -60,6 +81,10 @@ class Eligibility(BaseActiveTimeStampModel):
         return "{}-{}-{}".format(self.parameter,self.lower_limit, self.upper_limit)
 
 class ProductGroup(BaseActiveTimeStampModel):
+    """
+        ProductGroup: All the products published together at a time will be under one product group.
+        This must be sellable if active.
+    """
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     icon = models.URLField(blank=True, null=True, help_text="An icon which can be thumbnail")
@@ -94,6 +119,10 @@ class ProductGroup(BaseActiveTimeStampModel):
     
 
 class Product(BaseActiveTimeStampModel):
+    """
+        Product: All the products published under a product group.
+        This can be sellable individually under a product group depending on publisher's choice.
+    """
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     icon = models.URLField(blank=True, null=True)
