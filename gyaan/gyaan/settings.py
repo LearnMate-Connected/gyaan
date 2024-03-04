@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     '_gybase',
     'gypermission',
-    'gyuser'
+    'gyuser',
+    'gyproduct'
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'Abhishek@2001',
-        'HOST': 'localhost',  # Or the IP address of your PostgreSQL server
+        'HOST': '127.0.0.1',  # Or the IP address of your PostgreSQL server
         'PORT': '5432',        # Or the port your PostgreSQL server is listening on
     }
 }

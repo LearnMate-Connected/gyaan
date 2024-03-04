@@ -100,7 +100,7 @@ class Profile(BaseActiveTimeStampModel):
     )
     birthday = models.DateField(default=None, null=True)
     year_of_completion = models.PositiveSmallIntegerField(blank=True, null=True)
-    is_working = models.BooleanField(null=True, blank=True)
+    is_working = models.BooleanField(default=True)
     parent_or_guardian_name = models.CharField(max_length=30, null=True)
     parent_or_guardian_email = models.EmailField(null=True)
     parent_or_guardian_phone = models.CharField(

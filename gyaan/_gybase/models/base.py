@@ -14,7 +14,7 @@ class BaseActiveModel(BaseModel):
         abstract = True
     
 class BaseTimeStampModel(BaseModel):
-    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)\
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     
     class Meta:
         abstract = True
