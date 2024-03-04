@@ -27,6 +27,8 @@ class GyaanUserManager(UserManager):
                 email="abhishekpandey241998@gmail.com", username="admin",
                 password="abhishek@1234")
         return None
+
+
 class User(AbstractUser):
     """Custom User Model."""
 
@@ -46,7 +48,7 @@ class User(AbstractUser):
 
 
 class Profile(BaseActiveTimeStampModel):
-
+    "Profile model For User with necessary details"
     email_init = models.EmailField(verbose_name='Initial Email Address', null=True)
     phone = models.CharField(null=True, max_length=30
     )
