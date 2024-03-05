@@ -1,11 +1,10 @@
-# from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 from django.utils import timezone
 
 from _gybase.models.base import BaseActiveTimeStampModel
 
-from gyproduct.constants import CATEGORY_CHOICES, OWNER_CHOICES, ELIGIBILITY_PARAM_CHOICES
+from gyproduct.constants import CATEGORY_CHOICES, OWNER_CHOICES, ELIGIBILITY_PARAM_CHOICES, SUBSCRIPTION_RESOURCE_CHOICES
 
 
 class Category(BaseActiveTimeStampModel):
@@ -27,7 +26,6 @@ class Category(BaseActiveTimeStampModel):
     def __str__(self) -> str:
         return "{}-{}".format(self.name, self.active)
 
-
 class Department(BaseActiveTimeStampModel):
     """
         Department: For every topic being published on platform there must be a department.
@@ -45,7 +43,6 @@ class Department(BaseActiveTimeStampModel):
     
     def __str__(self):
         return "{}".format(self.name)
-
 
 class Topic(BaseActiveTimeStampModel):
     """
@@ -143,4 +140,18 @@ class Product(BaseActiveTimeStampModel):
 
     def __str__(self):
         return "{}-{}-{}".format(self.name, self.product_group, self.created_by_id)
+
+
+# TODO: Need to take a call whether we need to have a seperate django models for Resources and Contents
+class ResourceContents(BaseActiveTimeStampModel):
+    resource_type = models.CharField(choices=SUBSCRIPTION_RESOURCE_CHOICES)
+    resource_id = models.IntegerField(help_text="Id of resource")
+    video_content_link = models.URLField(blank=True, null=True)
+    audio_content_link = models.URLField(blank=True, null=True)
+    written_content_link = models.URLField(blank=True, null=True)
+    image_content_link = models.URLField(blank=True, null=True)
+    custom_parameters = models.JSONField(default=dict, blank=True, null=True)
+    
+    def __str__(self):
+        return "{}-{}-{}".format(self.resource_type, self.resource_id, self.id)
 
