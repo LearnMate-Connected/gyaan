@@ -15,7 +15,8 @@ In every app we will be having api folder with following files:
 Given that model is going to be our main backend entity the above order is in
 descending order given distant from the main entity as a parameter.
 This tells that:
-1. data_utils : only module doing direct operation on models of app.
+1. data_utils : only module doing direct operation on models of app now we have moved it to data_utils.py of _gybase
+   that we will be using to perform model operation.
 2. utils.py : called by views.py and utils.py will be calling data_utils 
    for database operation.
 3. views.py: Called by urls.py and calls utils.py 
