@@ -9,6 +9,8 @@ from django.utils import timezone
 
 from _gybase.models.base import BaseActiveTimeStampModel
 
+from gyuser.constants import APPROVAL_STATUS_CHOICES
+
 
 class GyaanUserManager(UserManager):
     """Custom User Manager."""
@@ -43,6 +45,7 @@ class User(AbstractUser):
 
     id = models.AutoField(primary_key=True, editable=False)
     gender = models.CharField(max_length=10, choices=GENDER, null=True, blank=True)
+    is_publisher = models.BooleanField(default=False)
 
     objects = GyaanUserManager()
 
@@ -137,3 +140,13 @@ class Profile(BaseActiveTimeStampModel):
     )
     last_modified_by = models.IntegerField(blank=True, null=True)
     last_updated_by = models.IntegerField(blank=True, null=True)
+
+
+class PublisherApproval(BaseActiveTimeStampModel):
+    user = models.OneToOneField(
+        User, on_delete=models.PROTECT, related_name="user", db_index=True,
+    )
+    document_folder_link = models.URLField()
+    status = models.CharField(choices=APPROVAL_STATUS_CHOICES)
+    approved_by = models.IntegerField(blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
