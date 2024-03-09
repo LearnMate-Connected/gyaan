@@ -50,8 +50,9 @@ class User(AbstractUser):
 class Profile(BaseActiveTimeStampModel):
     "Profile model For User with necessary details"
     email_init = models.EmailField(verbose_name='Initial Email Address', null=True)
-    phone = models.CharField(null=True, max_length=30
-    )
+    username = models.CharField(max_length=251, unique=True, default=email_init)
+    phone = models.CharField(null=True, max_length=30)
+    block = models.BooleanField(default= False)
     date_of_birth = models.DateField(null=True)
     address = models.TextField(null=True)
     photo_url = models.URLField(default=None, null=True, help_text="An optional image of the user")

@@ -46,4 +46,11 @@ class BaseDataUtils:
         return self.model_class.objects.bulk_create(
             [self.model_class(**i) for i in objects], batch_size=500)
         
-
+    def get_fields_as_dict(self, instance: Model, fields=None) -> dict:
+        '''
+            If fields are given then it return dictionary with those field as key 
+            else dictionary with all fields as key against their value for one object
+        '''
+        if fields is None:
+            fields = [field.name for field in instance._meta.fields]
+        return {field: getattr(instance, field) for field in fields}

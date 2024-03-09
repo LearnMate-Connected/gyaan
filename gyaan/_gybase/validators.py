@@ -52,6 +52,17 @@ class Validators:
             return True
         return False
     
+    @staticmethod
+    def password_validator(password):
+        valid = False
+        try:
+            pwd = str(password)
+            if len(pwd) <= 50:
+                valid = True
+        except:
+            pass
+        return valid
+    
     
     
     
