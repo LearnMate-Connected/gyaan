@@ -1,6 +1,12 @@
-from gyproduct.api.data_utils import CategoryDocsDataUtils
+from gyproduct.api.data_utils import CategoryDataUtils, DepartmentDataUtils, TopicDataUtils ,CategoryDocsDataUtils
 
 from  gyproduct.constants import CATEGORY_CHOICES
+
+
+class CategoryUtils:
+    category_data_class = CategoryDataUtils
+    
+    pass
 
 
 class CatgeoryDocumentsUtils:

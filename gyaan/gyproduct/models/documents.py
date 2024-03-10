@@ -14,7 +14,6 @@ class DocumentType(BaseActiveTimeStampModel):
     description = models.TextField(blank=True, null=True)
     
 
-
 class PublisherCategoryDocuments(BaseActiveTimeStampModel):
     '''
         This model defines all the documents related for publisher approval under a category
