@@ -1,6 +1,6 @@
 from django.urls import path
 
-from gyuser.views import UserLoginViewset
+from gyuser.api.views import UserLoginViewset
 
 
 urlpatterns = [
