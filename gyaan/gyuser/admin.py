@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 
-from gyuser.models import *
+from gyuser.models import User, Profile
 
 
 @admin.register(User)

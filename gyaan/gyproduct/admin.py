@@ -1,5 +1,6 @@
 from django.contrib import admin
-from gyproduct.models.base import *
+from gyproduct.models.base import (
+Category, Department, Topic,  Eligibility, ProductGroup, Product)
 
 
 @admin.register(Category)
@@ -26,7 +27,8 @@ class TopicAdmin(admin.ModelAdmin):
 
     search_fields = ('name', 'department__name', 'id')
     date_hierarchy = 'updated_at'
-    
+
+
 @admin.register(Eligibility)
 class EligibilityAdmin(admin.ModelAdmin):
     list_display = ('parameter', 'lower_limit', 'upper_limit')
