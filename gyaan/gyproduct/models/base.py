@@ -20,8 +20,8 @@ class Category(BaseActiveTimeStampModel):
     description = models.TextField(blank=True, null=True)
     icon = models.URLField(blank=True, null=True)
     custom_parameters = models.JSONField(default=dict, blank=True, null=True)
-    created_by_id = models.CharField(max_length=10)
-    updated_by_id = models.CharField(max_length=10)
+    created_by_id = models.PositiveBigIntegerField()
+    updated_by_id = models.PositiveBigIntegerField()
 
     def __str__(self) -> str:
         return "{}-{}".format(self.name, self.active)
@@ -37,8 +37,8 @@ class Department(BaseActiveTimeStampModel):
     description = models.TextField(blank=True, null=True)
     help_email = models.EmailField(
         help_text="An email to support issues in these topics", blank=True, null=True)
-    created_by_id = models.CharField(max_length=10)
-    updated_by_id = models.CharField(max_length=10)
+    created_by_id = models.PositiveBigIntegerField()
+    updated_by_id = models.PositiveBigIntegerField()
     min_age = models.IntegerField(blank=True, null=True)
     custom_parameters = models.JSONField(default=dict, blank=True, null=True)
     
@@ -56,8 +56,8 @@ class Topic(BaseActiveTimeStampModel):
     description = models.TextField(blank=True, null=True)
     help_email = models.EmailField( blank=True, null=True, help_text="An email to support issues in these topics")
     department = models.ForeignKey(Department, on_delete=models.PROTECT, related_name='topics', blank=True, null=True)
-    created_by_id = models.CharField(max_length=10)
-    updated_by_id = models.CharField(max_length=10)
+    created_by_id = models.PositiveBigIntegerField()
+    updated_by_id = models.PositiveBigIntegerField()
     custom_parameters = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):
@@ -70,8 +70,9 @@ class Eligibility(BaseActiveTimeStampModel):
         As of now we don't know exactly the number of parameters for eligibility.
     """
     parameter = models.CharField(choices=ELIGIBILITY_PARAM_CHOICES)
-    lower_limit = models.IntegerField()
-    upper_limit = models.IntegerField()
+    lower_limit = models.FloatField()
+    upper_limit = models.FloatField()
+    multiplier = models.FloatField(default=1.0)
     custom_parameters = models.JSONField(default=dict, blank=True, null=True)
 
     class Meta:
@@ -93,17 +94,18 @@ class ProductGroup(BaseActiveTimeStampModel):
     updated_by_id = models.CharField(max_length=10)
     expiry_date = models.DateField(blank=True, null=True)
     is_expiry_enabled = models.BooleanField(default=False)
-    cost_price = models.PositiveBigIntegerField()
-    selling_price = models.PositiveBigIntegerField()
+    cost_price = models.FloatField()
+    selling_price = models.FloatField()
+    mrp = models.FloatField()
     owned_by = models.CharField(max_length=3, choices=OWNER_CHOICES)
     category = models.ForeignKey(Category, on_delete=models.PROTECT, 
                                 related_name='product_groups', 
                                 help_text="A Product group must have a category"
                             )
     topic = models.ManyToManyField(Topic, related_name='product_groups')
-    eligibility =  models.ForeignKey(Eligibility, on_delete=models.PROTECT, related_name='product_group')
+    eligibility =  models.ManyToManyField(Eligibility, related_name='product_group')
     is_approved = models.BooleanField(default=False, help_text="It won't be true untill all products are approved in this group")
-    approved_by_id = models.CharField(max_length=10)
+    approved_by_id = models.PositiveBigIntegerField()
     is_sellable = models.BooleanField(default=True)
     limited_consumption = models.BooleanField(default=False, help_text="If publisher wants to limit the consumption")
     consumption_quantity = models.FloatField(default=0.0, help_text="If limited consumption is applicable then there must be consumption quantity")
@@ -126,11 +128,12 @@ class Product(BaseActiveTimeStampModel):
     created_by_id = models.CharField(max_length=10)
     updated_by_id = models.CharField(max_length=10)
     product_group = models.ForeignKey(ProductGroup, on_delete=models.PROTECT, related_name='products', help_text="A product group created at time when products are published")
-    eligibility = models.ForeignKey(Eligibility, on_delete=models.PROTECT, related_name='product', blank=True, null=True)
-    cost_price = models.PositiveBigIntegerField()
-    selling_price = models.PositiveBigIntegerField()
+    eligibility = models.ManyToManyField(Eligibility, related_name='product')
+    cost_price = models.FloatField()
+    selling_price = models.FloatField()
+    mrp = models.FloatField()
     owned_by = models.CharField(max_length=3, choices=OWNER_CHOICES)
-    approved_by_id = models.CharField(max_length=10)
+    approved_by_id = models.PositiveBigIntegerField()
     limited_consumption = models.BooleanField(default=False, help_text="If publisher wants to limit the consumption")
     consumption_quantity = models.FloatField(default=0.0, help_text="If limited consumption is applicable then there must be consumption quantity")
     is_sellable = models.BooleanField(default=False)
