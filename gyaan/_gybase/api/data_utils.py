@@ -7,7 +7,7 @@ class BaseDataUtils:
     def __init__(self, model_class):
         self.model_class = model_class
         
-    def get(self, locked=False, **kwargs) -> Model:
+    def get(self, locked=False, **kwargs) -> Model | None:
         try:
             if locked:
                 return self.model_class.objects.select_for_update(
@@ -48,8 +48,9 @@ class BaseDataUtils:
         
     def get_fields_as_dict(self, instance: Model, fields=None) -> dict:
         '''
-            If fields are given then it return dictionary with those field as key 
-            else dictionary with all fields as key against their value for one object
+            If fields are given then it returns dictionary with those field as
+            key else dictionary with all fields as key against their value for
+            one object
         '''
         if fields is None:
             fields = [field.name for field in instance._meta.fields]

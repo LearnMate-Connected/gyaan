@@ -26,6 +26,7 @@ class Category(BaseActiveTimeStampModel):
     def __str__(self) -> str:
         return "{}-{}".format(self.name, self.active)
 
+
 class Department(BaseActiveTimeStampModel):
     """
         Department: For every topic being published on platform there must be a department.
@@ -44,6 +45,7 @@ class Department(BaseActiveTimeStampModel):
     def __str__(self):
         return "{}".format(self.name)
 
+
 class Topic(BaseActiveTimeStampModel):
     """
         Topic: For every Product or ProductGroup being published on platform there can be multiple topics.
@@ -61,6 +63,7 @@ class Topic(BaseActiveTimeStampModel):
     def __str__(self):
         return "{}".format(self.name)
 
+
 class Eligibility(BaseActiveTimeStampModel):
     """
         Eligibility: We need to maintain some sort of restrictions on contents published on platform.
@@ -77,6 +80,7 @@ class Eligibility(BaseActiveTimeStampModel):
     def __str__(self):
         return "{}-{}-{}".format(self.parameter,self.lower_limit, self.upper_limit)
 
+
 class ProductGroup(BaseActiveTimeStampModel):
     """
         ProductGroup: All the products published together at a time will be under one product group.
@@ -89,7 +93,6 @@ class ProductGroup(BaseActiveTimeStampModel):
     updated_by_id = models.CharField(max_length=10)
     expiry_date = models.DateField(blank=True, null=True)
     is_expiry_enabled = models.BooleanField(default=False)
-    icon = models.URLField(max_length=200, blank=True, null=True)
     cost_price = models.PositiveBigIntegerField()
     selling_price = models.PositiveBigIntegerField()
     owned_by = models.CharField(max_length=3, choices=OWNER_CHOICES)
@@ -98,8 +101,6 @@ class ProductGroup(BaseActiveTimeStampModel):
                                 help_text="A Product group must have a category"
                             )
     topic = models.ManyToManyField(Topic, related_name='product_groups')
-    created_by_id = models.CharField(max_length=10)
-    updated_by_id = models.CharField(max_length=10)
     eligibility =  models.ForeignKey(Eligibility, on_delete=models.PROTECT, related_name='product_group')
     is_approved = models.BooleanField(default=False, help_text="It won't be true untill all products are approved in this group")
     approved_by_id = models.CharField(max_length=10)
@@ -109,7 +110,6 @@ class ProductGroup(BaseActiveTimeStampModel):
     limited_sale_applicable = models.BooleanField(default=False, help_text="If there are only limited quantity available for sale")
     quantity = models.FloatField(default=0.0, help_text="If limited sale applicable then there must be limited quanity")
     custom_parameters = models.JSONField(default=dict, blank=True, null=True)
-
 
     def __str__(self):
         return "{}-{}-{}".format(self.name, self.selling_price, self.created_by_id)

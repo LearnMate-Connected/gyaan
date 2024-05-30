@@ -1,14 +1,8 @@
-import uuid
-
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import UserManager
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.postgres.fields import ArrayField
-from django.contrib.postgres.fields import JSONField
 from django.db import models
-from django.utils import timezone
 
 from _gybase.models.base import BaseActiveTimeStampModel
-
 from gyuser.constants import APPROVAL_STATUS_CHOICES
 
 
@@ -44,21 +38,24 @@ class User(AbstractUser):
     )
 
     id = models.AutoField(primary_key=True, editable=False)
-    gender = models.CharField(max_length=10, choices=GENDER, null=True, blank=True)
+    gender = models.CharField(
+        max_length=10, choices=GENDER, null=True, blank=True)
     is_publisher = models.BooleanField(default=False)
 
     objects = GyaanUserManager()
 
 
 class Profile(BaseActiveTimeStampModel):
-    "Profile model For User with necessary details"
-    email_init = models.EmailField(verbose_name='Initial Email Address', null=True)
+    """Profile model For User with necessary details"""
+    email_init = models.EmailField(
+        verbose_name='Initial Email Address', null=True)
     username = models.CharField(max_length=251, unique=True, default=email_init)
     phone = models.CharField(null=True, max_length=30)
-    block = models.BooleanField(default= False)
+    block = models.BooleanField(default=False)
     date_of_birth = models.DateField(null=True)
     address = models.TextField(null=True)
-    photo_url = models.URLField(default=None, null=True, help_text="An optional image of the user")
+    photo_url = models.URLField(
+        default=None, null=True, help_text="An optional image of the user")
     alternate_phone = models.CharField(
         max_length=15,
         null=True,
@@ -77,7 +74,7 @@ class Profile(BaseActiveTimeStampModel):
         models.CharField(max_length=5),
         default=None,
         null=True,
-        help_text="Language codes of preferred languages in the order of preference"
+        help_text="Language codes of preferred languages in preference order"
     )
     countries = ArrayField(
         models.CharField(max_length=20),
