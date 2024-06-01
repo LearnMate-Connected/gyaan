@@ -6,16 +6,35 @@ from gyproduct.models.base import (
     )
 from gyproduct.models.documents import PublisherCategoryDocuments
 
+class CategoryDataUtils(BaseDataUtils):
+    model_name = Category
 
-CategoryDataUtils = BaseDataUtils(Category)
-DepartmentDataUtils = BaseDataUtils(Department)
-TopicDataUtils = BaseDataUtils(Topic)
-EligibilityDataUtils = BaseDataUtils(Eligibility)
-ProductGroupDataUtils = BaseDataUtils(ProductGroup)
-ProductDataUtils = BaseDataUtils(Product)
-ResourceContentDataUtils = BaseDataUtils(ResourceContents)
+class DepartmentDataUtils(BaseDataUtils):
+    model_name = Department
+
+
+class TopicDataUtils(BaseDataUtils):
+    model_name = Topic
+
+
+class EligibilityDataUtils(BaseDataUtils):
+    model_name = Eligibility
+
+
+class ProductGroupDataUtils(BaseDataUtils):
+    model_name = ProductGroup
+
+
+class ProductDataUtils(BaseDataUtils):
+    model_name = Product
+
 
 # Documents data utils
-CategoryDocsDataUtils = BaseDataUtils(PublisherCategoryDocuments)
+class CategoryDocsDataUtils(BaseDataUtils):
+    model_name = PublisherCategoryDocuments
+
+
+class ResourceContentDataUtils(BaseDataUtils):
+    model_name = ResourceContents
 
 

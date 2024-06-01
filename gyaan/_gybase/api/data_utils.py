@@ -3,10 +3,8 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 
 class BaseDataUtils:
-    
-    def __init__(self, model_class):
-        self.model_class = model_class
-        
+    model_class = None
+
     def get(self, locked=False, **kwargs) -> Model | None:
         try:
             if locked:
@@ -37,7 +35,7 @@ class BaseDataUtils:
 
     def bulk_update(self, instances: list, fields: list, is_dict=False) -> Model:
         if not is_dict:
-            return  self.model_class.objects.bulk_update(
+            return self.model_class.objects.bulk_update(
                 instances, fields, batch_size=500)
         return self.model_class.objects.bulk_update(
             [self.model_class(**i) for i in instances], fields, batch_size=5000)
