@@ -39,7 +39,7 @@ class Validators:
     @staticmethod
     def email_validator(email):
         email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-        valid  = re.fullmatch(email_regex, email)
+        valid = re.fullmatch(email_regex, email)
         if valid:
             return True
         return False

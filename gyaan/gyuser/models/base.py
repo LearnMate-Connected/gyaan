@@ -38,6 +38,8 @@ class User(AbstractUser):
     )
 
     id = models.AutoField(primary_key=True, editable=False)
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField( max_length=150, null=True, blank=True)
     gender = models.CharField(
         max_length=10, choices=GENDER, null=True, blank=True)
     is_publisher = models.BooleanField(default=False)

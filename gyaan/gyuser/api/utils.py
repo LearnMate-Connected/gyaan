@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from django.utils import timezone
 
 from _gybase.api.utils import BaseApiUtils
@@ -9,11 +10,9 @@ from gyuser.api.data_utils import UserDataUtils, ProfileDataUtils, ApprovalDataU
 from gyuser.constants import PENDING, APPROVED, REJECTED, APPROVAL_STATUS_CHOICES
 
 
-
-
 class UserProfileLoginUtils:
-    user_data_class = UserDataUtils
-    profile_data_class = ProfileDataUtils
+    user_data_class = UserDataUtils()
+    profile_data_class = ProfileDataUtils()
     
     def user_signup(self, **kwargs):
         first_name = kwargs.get("first_name")
@@ -22,12 +21,11 @@ class UserProfileLoginUtils:
         if len(first_name) > 50:
             return {"error": "Please send first name within 50 chars"}, 400
         last_name = kwargs.get("last_name")
-        if last_name and not isinstance(first_name, str):
+        if last_name and not isinstance(first_name, str) and len(last_name) > 50:
             return {"error": "Please send valid last name"}, 400
-        if len(last_name) > 50:
-            return {"error": "Please send last name within 50 chars"}, 400
         email = kwargs.get("email")
-        if not email or not isinstance(email, str) or Validators.email_validator(email):
+        if (not email or not isinstance(email, str) or
+                not Validators.email_validator(email)):
             return {"error": "Please send valid email"}, 400
         phone = kwargs.get("phone")
         if not phone or not Validators.phone_validator(phone):
@@ -36,25 +34,26 @@ class UserProfileLoginUtils:
         if not username or not isinstance(username, str):
             return {"error": "Please send a valid phone number"}, 400
         password = kwargs.get("password")
-        if not password or Validators.password_validator(password):
+        if not password or not Validators.password_validator(password):
             return {"error": "Please send valid password"}, 400
-        if self.user_data_class(**{"username": username}):
-            return {"error": "User with username {} already exists".format(username)}, 400
-        if self.user_data_class(**{"email": email}):
-            return {"error": "User with email {} already exists".format(email)}, 400
-        if self.profile_data_class(**{"phone": phone}):
-            return {"error": "User with phone {} already exists".format(phone)}, 400
+        user_exist = self.user_data_class.filter_model(
+            q=Q(username=username) | Q(email=email)).exists()
+        if user_exist:
+            return {"error": "User with entered details already exists"}, 400
         crt_user = {"username": username, "email": email,
-            "first_name": first_name, "last_name": last_name}
+                    "first_name": first_name, "last_name": last_name,
+                    "is_staff": kwargs.get("is_staff", False),
+                    "is_superuser": kwargs.get("is_superuser", False)}
         with transaction.atomic():
-            created_user = self.data_class.create_user(**crt_user)
+            created_user = self.user_data_class.create(**crt_user)
             created_user.set_password = password
-            created_user.save(["password"])
             profile = created_user.profile
+            created_user.save()
             profile.phone = phone
             profile.update_at = timezone.now()
             profile.save(update_fields = ["updated_at", "phone"])
         #TODO: Some logic to send the username and password to user email or phone
+        #TODO: Remove sending password before going live
         return {"username": username, "password": password}, 200
     
     def username_login(self, user, **kwargs):
@@ -72,7 +71,7 @@ class UserProfileLoginUtils:
             return {"error": "User doesn't exist with username {}".format(username)}, 400
         if not (profile.block and user.is_active):
             return {"error": "This user is blocked or incativated. Please contact support team."}, 400
-        if not user.check_password(password):
+        if not user.check_password(username, password):
             return {"error": "Please enter valid username/password"}, 400
         
         user_dict = self.profile_data_class.get_fields_as_dict(user)
@@ -172,7 +171,7 @@ class PublisherApprovalUtils:
         email = kwargs.get("email")
         if email:
             f_dict["email"] = email
-        queryset = self.approval_data_class.filter(**f_dict).values(
+        queryset = self.approval_data_class.filter_model(**f_dict).values(
             "user__username", "document_folder_link", "status", "approved_by", "remarks")
         paginated_data, pagination = BaseApiUtils.get_paginator(
             page_number, queryset, limit=limit

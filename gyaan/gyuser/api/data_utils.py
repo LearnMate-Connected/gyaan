@@ -5,7 +5,6 @@ from gyuser.models.base import User, Profile, PublisherApproval
 
 class UserDataUtils(BaseDataUtils):
     model_class = User
-    pass
 
 
 class ProfileDataUtils(BaseDataUtils):

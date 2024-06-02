@@ -3,7 +3,7 @@ from rest_framework.viewsets import ViewSet
 from gyuser.api.utils import UserProfileLoginUtils, PublisherApprovalUtils
 
 
-class UserLoginViewset:
+class UserLoginViewset(ViewSet):
     view_class = UserProfileLoginUtils()
     
     def username_login(self, request):
@@ -18,7 +18,8 @@ class UserLoginViewset:
         resp, status_code = self.view_class.reset_password(request.user, **request.data)
         return Response(resp, status=status_code)
 
-class PublisherApprovalViewset:
+
+class PublisherApprovalViewset(ViewSet):
     view_class = PublisherApprovalUtils
     
     def create_publisher_approval(self, request):

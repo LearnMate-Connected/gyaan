@@ -25,7 +25,7 @@ class CatgeoryDocumentsUtils:
         is_required = kwargs.get("required")
         if is_required is not None:
             f_dict["is_required"] = is_required
-        category_docs = list(self.cat_docs_data_class.filter(**f_dict).values())
+        category_docs = list(self.cat_docs_data_class.filter_model(**f_dict).values())
         return {"data": category_docs}, 200
         
         

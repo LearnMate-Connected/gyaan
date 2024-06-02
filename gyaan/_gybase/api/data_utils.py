@@ -5,7 +5,10 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 class BaseDataUtils:
     model_class = None
 
-    def get(self, locked=False, **kwargs) -> Model | None:
+    def get_model_object(self, **kwargs):
+        return self.model_class(**kwargs)
+
+    def get_obj(self, locked=False, **kwargs):
         try:
             if locked:
                 return self.model_class.objects.select_for_update(
@@ -17,30 +20,32 @@ class BaseDataUtils:
         except MultipleObjectsReturned:
             return None
 
-    def filter(self, locked=False, **kwargs) -> QuerySet:
+    def filter_model(self, locked=False, q=None, **kwargs) -> QuerySet:
+        print(self.model_class)
+        queryset = self.model_class.objects.filter(**kwargs)
+        if q:
+            queryset = queryset.filter(q)
         if locked:
-            return self.model_class.objects.filter(
-                **kwargs).select_for_update(nowait=True)
-        else:
-            return self.model_class.objects.filter(**kwargs)
+            return queryset.select_for_update(nowait=True)
+        return queryset
 
-    def update(self, instance: Model, **kwargs) -> Model:
+    def update(self, instance: Model, **kwargs):
         for attr, value in kwargs.items():
             setattr(instance, attr, value)
         instance.save()
         return instance
 
-    def create(self, **kwargs) -> Model:
+    def create(self, **kwargs):
         return self.model_class.objects.create(**kwargs)
 
-    def bulk_update(self, instances: list, fields: list, is_dict=False) -> Model:
+    def bulk_update(self, instances: list, fields: list, is_dict=False):
         if not is_dict:
             return self.model_class.objects.bulk_update(
                 instances, fields, batch_size=500)
         return self.model_class.objects.bulk_update(
             [self.model_class(**i) for i in instances], fields, batch_size=5000)
 
-    def bulk_create(self, objects: list) -> Model:
+    def bulk_create(self, objects: list):
         return self.model_class.objects.bulk_create(
             [self.model_class(**i) for i in objects], batch_size=500)
         
