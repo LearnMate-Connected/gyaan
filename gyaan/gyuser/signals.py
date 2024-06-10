@@ -7,4 +7,5 @@ def create_profile_on_user_create(sender, instance=None, **kwargs):
     if kwargs.get('created'):
         Profile.objects.get_or_create(user=instance)
 
+
 post_save.connect(create_profile_on_user_create, sender=User)

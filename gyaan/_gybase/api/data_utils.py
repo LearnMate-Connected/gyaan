@@ -8,7 +8,7 @@ class BaseDataUtils:
     def get_model_object(self, **kwargs):
         return self.model_class(**kwargs)
 
-    def get_obj(self, locked=False, **kwargs):
+    def get(self, locked=False, **kwargs):
         try:
             if locked:
                 return self.model_class.objects.select_for_update(
