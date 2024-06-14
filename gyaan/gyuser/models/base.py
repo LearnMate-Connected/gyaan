@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -49,9 +50,8 @@ class User(AbstractUser):
 
 class Profile(BaseActiveTimeStampModel):
     """Profile model For User with necessary details"""
-    email_init = models.EmailField(
-        verbose_name='Initial Email Address', null=True)
-    username = models.CharField(max_length=251, unique=True, default=email_init)
+    full_name = models.CharField(
+        max_length=255, null=True, blank=True, help_text="Full name of user")
     phone = models.CharField(null=True, max_length=30)
     block = models.BooleanField(default=False)
     date_of_birth = models.DateField(null=True)
@@ -88,16 +88,6 @@ class Profile(BaseActiveTimeStampModel):
         max_length=100,
         null=True
     )
-    current_timezone = models.CharField(
-        default=None,
-        max_length=20,
-        null=True
-    )
-    timezones = ArrayField(
-        models.CharField(max_length=20),
-        default=None,
-        null=True
-    )
     highest_education_qualification = models.CharField(
         max_length=15,
         null=True,
@@ -114,28 +104,12 @@ class Profile(BaseActiveTimeStampModel):
         null=True,
     )
     facebook_id = models.CharField(unique=True, null=True, max_length=15)
-    google_plus = models.CharField(unique=True, null=True, max_length=15)
     linkedIn_id = models.CharField(unique=True, null=True, max_length=15)
     twitter_id = models.CharField(unique=True, null=True, max_length=15)
     github_id = models.CharField(unique=True, null=True, max_length=15)
-    exams_interested_in = ArrayField(
-        models.CharField(max_length=10),
-        default=None,
-        null=True,
-    )
-
     user = models.OneToOneField(
-        User,
-        on_delete=models.PROTECT,
-        related_name="profile",
-        db_index=True,
-    )
-
-    friends = models.ManyToManyField(
-        User,
-        help_text="Users a user has befriended on this platform",
-        related_name="friends",
-        default=None
+        get_user_model(),
+        on_delete=models.CASCADE, help_text="User",
     )
     last_modified_by = models.IntegerField(blank=True, null=True)
     last_updated_by = models.IntegerField(blank=True, null=True)

@@ -17,7 +17,7 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'phone', 'city', 'is_working')
+    list_display = ('user', 'phone', 'city', 'is_working', 'user')
 
     list_filter = ('user', 'phone', 'city', 'is_working')
 

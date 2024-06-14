@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     '_gybase',
     'gypermission',
     'gyuser',
-    'gyproduct'
+    'gyproduct',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -135,3 +136,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = "gyuser.User"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+     ],
+}
