@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from _gybase.api.utils import BaseApiUtils
 from _gybase.validators import Validators
@@ -52,9 +53,12 @@ class UserProfileLoginUtils:
             profile.phone = phone
             profile.update_at = timezone.now()
             profile.save(update_fields = ["updated_at", "phone"])
+        refresh = RefreshToken.for_user(created_user)
         #TODO: Some logic to send the username and password to user email or phone
         #TODO: Remove sending password before going live
-        return {"username": username, "password": password}, 200
+        return {"username": username, "password": password,
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh)}, 200
     
     def username_login(self, user, **kwargs):
         username = kwargs.get("username")
