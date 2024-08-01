@@ -109,7 +109,7 @@ class Profile(BaseActiveTimeStampModel):
     github_id = models.CharField(unique=True, null=True, max_length=15)
     user = models.OneToOneField(
         get_user_model(),
-        on_delete=models.CASCADE, help_text="User",
+        on_delete=models.CASCADE, help_text="User", related_name='profile'
     )
     last_modified_by = models.IntegerField(blank=True, null=True)
     last_updated_by = models.IntegerField(blank=True, null=True)

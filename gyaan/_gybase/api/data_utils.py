@@ -29,7 +29,8 @@ class BaseDataUtils:
             return queryset.select_for_update(nowait=True)
         return queryset
 
-    def update(self, instance: Model, **kwargs):
+    @staticmethod
+    def update(instance: Model, **kwargs):
         for attr, value in kwargs.items():
             setattr(instance, attr, value)
         instance.save()

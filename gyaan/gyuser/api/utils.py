@@ -10,6 +10,8 @@ from gyuser.api.data_utils import UserDataUtils, ProfileDataUtils, ApprovalDataU
 
 from gyuser.constants import PENDING, APPROVED, REJECTED, APPROVAL_STATUS_CHOICES
 
+from gyuser.models.base import User
+
 
 class UserProfileLoginUtils:
     user_data_class = UserDataUtils()
@@ -44,47 +46,50 @@ class UserProfileLoginUtils:
         crt_user = {"username": username, "email": email,
                     "first_name": first_name, "last_name": last_name,
                     "is_staff": kwargs.get("is_staff", False),
-                    "is_superuser": kwargs.get("is_superuser", False)}
+                    "is_superuser": kwargs.get("is_superuser", False),
+                    "password": password}
         with transaction.atomic():
             created_user = self.user_data_class.create(**crt_user)
-            created_user.set_password = password
-            profile = created_user.profile
+            created_user.set_password(password)
             created_user.save()
-            profile.phone = phone
-            profile.update_at = timezone.now()
-            profile.save(update_fields = ["updated_at", "phone"])
+            profile = created_user.profile
+            updt_profile = {"phone": phone, "updated_at": timezone.now()}
+            self.profile_data_class.update(profile, **updt_profile)
         refresh = RefreshToken.for_user(created_user)
-        #TODO: Some logic to send the username and password to user email or phone
-        #TODO: Remove sending password before going live
-        return {"username": username, "password": password,
+        # TODO: Logic to send the username and password to user email or phone
+        return {"username": username,
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh)}, 200
     
-    def username_login(self, user, **kwargs):
+    def username_login(self, **kwargs):
         username = kwargs.get("username")
         password = kwargs.get("password")
         if not (username and password):
             return {"error": "Please enter valid details and try again"}, 400
         if not Validators.password_validator(password):
             return {"error": "Please send a valid password"}, 400
-        profile = self.profile_data_class.get(**{"username": "username"})
-        if not profile:
-            return {"error": "Please signup and try again"}, 400
         user = self.user_data_class.get(**{"username": username})
         if not user:
             return {"error": "User doesn't exist with username {}".format(username)}, 400
-        if not (profile.block and user.is_active):
+        if (user.profile.block or not user.is_active):
+            print(user.is_active)
+            print(user.profile.block)
             return {"error": "This user is blocked or incativated. Please contact support team."}, 400
-        if not user.check_password(username, password):
+        print(password)
+        print(user.password)
+        if not user.check_password(password):
             return {"error": "Please enter valid username/password"}, 400
         
-        user_dict = self.profile_data_class.get_fields_as_dict(user)
-        profile_dict = self.user_data_class.get_fields_as_dict(profile)
-        response = {**user_dict, **profile_dict}
-        return response, 200
-        
+        profile_dict = self.profile_data_class.map_profile_object(user.profile)
+        print(profile_dict)
+        user_dict = self.user_data_class.get_fields_as_dict(user)
+        print(user_dict)
+        refresh = RefreshToken.for_user(user)
+        return {**user_dict, **profile_dict,
+                    "access_token": str(refresh.access_token),
+                    "refresh_token": str(refresh)}, 200
 
-    def reset_password(self, user, **kwargs):
+    def reset_password(self, **kwargs):
         username = kwargs.get("username")
         if not username or not isinstance(username, str):
             return {"error": "Please send a valid phone number"}, 400
@@ -94,11 +99,10 @@ class UserProfileLoginUtils:
         profile = self.profile_data_class.get(**{"username": "username"})
         user = self.user_data_class.get(**{"username": username})
         if not (user and profile):
-            return {"error": "User doesn't exist with username {}".format(username)}, 400
-        if not (profile.block and user.is_active):
-            return {"error": "This user is blocked or incativated. Please contact support team."}, 400
-        #TODO: Logic to send verification mail
-        
+            return {"error": "User/ profile doesn't exist with username {}".format(username)}, 400 # NOQA
+        if profile.block or not user.is_active:
+            return {"error": "This user is blocked or incativated. Please contact support team."}, 400  # NOQA
+        # TODO: Logic to send verification mail
         password = kwargs.get("password")
         if not password or Validators.password_validator(password):
             return {"error": "Please send valid password"}, 400

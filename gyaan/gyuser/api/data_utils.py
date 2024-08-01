@@ -10,6 +10,12 @@ class UserDataUtils(BaseDataUtils):
 class ProfileDataUtils(BaseDataUtils):
     model_class = Profile
 
+    @staticmethod
+    def map_profile_object(profile):
+        return {"profile_id": profile.id,
+                "full_name": profile.full_name,
+                "phone": profile.phone}
+
 
 class ApprovalDataUtils(BaseDataUtils):
     model_class = PublisherApproval
